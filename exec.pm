@@ -40,15 +40,34 @@ use IPC::System::Simple qw(capture capturex);
 
 sub Exec
 {
-    return capturex(@_);
+    my $out = '';
+    eval {
+       $out = capturex(@_);
+    };
+    return $@ ? $@ : $out;
 }
-Function::AddFunction("filepp_exec", "Exec::Exec");
+Function::AddFunction(
+   Filepp::CheckDefine('EXEC_MACRO_NAME') ?
+   Filepp::GetDefine('EXEC_MACRO_NAME') :
+   "exec",
+   "Exec::Exec"
+);
 
 sub ShellExec
 {
-    return capture(@_);
+    my $command = shift;
+    my $out = '';
+    eval {
+       $out = capture($command);
+    };
+    return $@ ? $@ : $out;
 }
-Function::AddFunction("filepp_shell_exec", "Exec::ShellExec");
+Function::AddFunction(
+   Filepp::CheckDefine('SHELL_MACRO_NAME') ?
+   Filepp::GetDefine('SHELL_MACRO_NAME') :
+   "shell",
+   "Exec::ShellExec"
+);
 
 return 1;
 
